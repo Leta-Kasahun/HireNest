@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Mail, ArrowRight, ArrowLeft } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import { ROUTES } from '../../config/constants';
 import * as authService from '../../services/authService';
+import AuthLayout from '../../components/AuthLayout';
+import Input from '../../components/Input';
+import Button from '../../components/Button';
 
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState('');
@@ -32,55 +36,55 @@ const ForgotPasswordPage = () => {
     };
 
     return (
-        <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-bold text-gray-900 font-heading">
-                        Reset Password
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Enter your email to receive a reset code
-                    </p>
+        <AuthLayout
+            title="Reset Password"
+            subtitle="Enter your email to receive a reset code"
+            backButton={false} // Custom back link provided below
+        >
+            {error && (
+                <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-none text-sm mb-6 flex items-start animate-fade-in">
+                    <div className="flex-shrink-0 mr-3">
+                        <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                    <span>{error}</span>
                 </div>
+            )}
 
-                {error && (
-                    <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm text-center">
-                        {error}
-                    </div>
-                )}
+            <form className="space-y-6" onSubmit={handleSubmit}>
+                <Input
+                    label="Email address"
+                    id="email"
+                    name="email"
+                    type="email"
+                    icon={Mail}
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                />
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email address
-                        </label>
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
-                        />
-                    </div>
+                <Button
+                    type="submit"
+                    variant="primary"
+                    fullWidth
+                    loading={isLoading}
+                    size="lg"
+                    className="shadow-none hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out"
+                >
+                    {isLoading ? 'Sending...' : 'Send Reset Code'}
+                    {!isLoading && <ArrowRight size={18} className="ml-2 inline-block" />}
+                </Button>
 
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary disabled:opacity-50 transition-colors"
-                    >
-                        {isLoading ? 'Sending...' : 'Send Reset Code'}
-                    </button>
-
-                    <div className="text-center">
-                        <Link to={ROUTES.LOGIN} className="font-medium text-secondary hover:text-secondary-dark text-sm">
-                            Back to Login
-                        </Link>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div className="text-center pt-2">
+                    <Link to={ROUTES.LOGIN} className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary transition-colors group">
+                        <ArrowLeft size={16} className="mr-2 transform group-hover:-translate-x-1 transition-transform" />
+                        Back to Login
+                    </Link>
+                </div>
+            </form>
+        </AuthLayout>
     );
 };
 

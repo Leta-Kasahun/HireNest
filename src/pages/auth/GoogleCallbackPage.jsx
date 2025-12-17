@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import { ROUTES } from '../../config/constants';
+import AuthLayout from '../../components/AuthLayout';
 
 const GoogleCallbackPage = () => {
     const [searchParams] = useSearchParams();
@@ -28,12 +29,15 @@ const GoogleCallbackPage = () => {
     }, [searchParams, socialLogin, navigate]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <div className="text-center">
-                <h2 className="text-xl font-semibold mb-2">Processing login...</h2>
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+        <AuthLayout
+            title="Processing Login"
+            subtitle="Please wait while we set things up..."
+        >
+            <div className="flex flex-col items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+                <p className="text-gray-500 text-sm">Validating credentials...</p>
             </div>
-        </div>
+        </AuthLayout>
     );
 };
 

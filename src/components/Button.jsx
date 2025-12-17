@@ -25,26 +25,27 @@ const Button = ({
   className = '',
   ...props
 }) => {
-  const baseClasses = 'font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-  
+  const baseClasses = 'font-medium rounded-none transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transform hover:-translate-y-1 active:translate-y-0';
+
   const variantClasses = {
-    primary: 'bg-secondary text-white hover:bg-secondary-dark focus:ring-secondary',
-    secondary: 'bg-white text-secondary border-2 border-secondary hover:bg-secondary hover:text-white focus:ring-secondary',
-    outline: 'bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-white focus:ring-primary',
-    danger: 'bg-error text-white hover:bg-error-dark focus:ring-error',
-    success: 'bg-accent text-white hover:bg-accent-dark focus:ring-accent',
+    primary: 'bg-primary text-white hover:bg-primary-light hover:shadow-lg hover:shadow-primary/20 focus:ring-primary',
+    secondary: 'bg-secondary text-white hover:bg-secondary-dark hover:shadow-lg hover:shadow-secondary/20 focus:ring-secondary',
+    outline: 'bg-transparent text-primary border border-gray-300 hover:bg-gray-50 focus:ring-primary',
+    ghost: 'bg-transparent text-text-secondary hover:text-primary hover:bg-gray-100 focus:ring-gray-200 shadow-none hover:shadow-none translate-y-0 hover:translate-y-0',
+    danger: 'bg-error text-white hover:bg-error-dark hover:shadow-lg hover:shadow-error/20 focus:ring-error',
+    success: 'bg-accent text-white hover:bg-accent-dark hover:shadow-lg hover:shadow-accent/20 focus:ring-accent',
   };
-  
+
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    md: 'px-6 py-2.5 text-base',
+    lg: 'px-8 py-3.5 text-lg',
   };
-  
+
   const widthClass = fullWidth ? 'w-full' : '';
-  
+
   const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${widthClass} ${className}`;
-  
+
   return (
     <button
       type={type}

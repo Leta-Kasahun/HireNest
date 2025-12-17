@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ShieldCheck, ArrowRight } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import { ROUTES } from '../../config/constants';
+import AuthLayout from '../../components/AuthLayout';
+import Button from '../../components/Button';
 
 const VerifyOtpPage = () => {
     const navigate = useNavigate();
@@ -10,7 +13,6 @@ const VerifyOtpPage = () => {
 
     useEffect(() => {
         if (!tempEmail) {
-            // If no email in state, redirect to register
             navigate(ROUTES.REGISTER);
         }
     }, [tempEmail, navigate]);
@@ -19,26 +21,9 @@ const VerifyOtpPage = () => {
         e.preventDefault();
         try {
             const data = await verifyOtp(otp);
-            // After verification, check response. 
-            // If token is present, we are logged in.
-            // If role selection needed (unlikely here since we select role at register), 
-            // but if backend says "needsRoleSelection" we might act.
-            // User flow says: "Step 4: After verification, user is redirected to role selection"
-            // But we collected role at registration. 
-            // If backend auto-logs in:
             if (data.token) {
-                // Check role and redirect
-                // We need to fetch user profile or decode token to get role if not returned in verifyOtp
-                // But verifyOtp in store updates 'user' state if token is returned (I added that logic in backend, let's hope frontend store handles it)
-                // Wait, store verifyOtp sets isLoading false but doesn't explicitly set User if backend returns it alone. 
-                // Backend verifyOtp returns: { message, token, refreshToken, ... }
-                // I should update store to handle login if token is returned.
-
-                // Assuming the user is logged in now
-                // We can rely on authStore state or data returned
                 navigate(ROUTES.DASHBOARD);
             } else {
-                // Maybe just verified but need to login?
                 navigate(ROUTES.LOGIN);
             }
         } catch (err) {
@@ -47,51 +32,59 @@ const VerifyOtpPage = () => {
     };
 
     return (
-        <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-bold text-gray-900 font-heading">
-                        Verify Your Email
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        We sent a code to <span className="font-medium text-gray-900">{tempEmail}</span>
-                    </p>
-                </div>
-
-                {error && (
-                    <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm text-center">
-                        {error}
+        <AuthLayout
+            title="Verify Your Email"
+            subtitle={
+                <span>
+                    We sent a code to <span className="font-bold text-gray-800">{tempEmail}</span>
+                </span>
+            }
+        >
+            {error && (
+                <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-none text-sm mb-6 flex items-start animate-fade-in">
+                    <div className="flex-shrink-0 mr-3">
+                        <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
                     </div>
-                )}
+                    <span>{error}</span>
+                </div>
+            )}
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div>
-                        <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
-                            Enter OTP
-                        </label>
+            <form className="space-y-6" onSubmit={handleSubmit}>
+                <div className="relative">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Verification Code
+                    </label>
+                    <div className="relative">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                            <ShieldCheck size={20} />
+                        </div>
                         <input
-                            id="otp"
-                            name="otp"
                             type="text"
                             required
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm tracking-widest text-center text-2xl"
-                            placeholder="123456"
+                            className="block w-full pl-12 pr-4 py-3 border border-gray-300 rounded-none bg-gray-50/50 text-center text-3xl tracking-[0.5em] font-bold focus:outline-none focus:bg-white focus:border-primary transition-all duration-300 placeholder-gray-300"
+                            placeholder="······"
                             maxLength={6}
                         />
                     </div>
+                </div>
 
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary disabled:opacity-50 transition-colors"
-                    >
-                        {isLoading ? 'Verifying...' : 'Verify Email'}
-                    </button>
-                </form>
-            </div>
-        </div>
+                <Button
+                    type="submit"
+                    variant="primary"
+                    fullWidth
+                    loading={isLoading}
+                    size="lg"
+                    className="shadow-none hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out mt-4"
+                >
+                    Verify Email
+                    {!isLoading && <ArrowRight size={18} className="ml-2 inline-block" />}
+                </Button>
+            </form>
+        </AuthLayout>
     );
 };
 

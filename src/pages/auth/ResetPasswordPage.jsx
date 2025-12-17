@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Lock, Key, CheckCircle, ArrowRight } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import { ROUTES } from '../../config/constants';
 import * as authService from '../../services/authService';
+import AuthLayout from '../../components/AuthLayout';
+import Input from '../../components/Input';
+import Button from '../../components/Button';
 
 const ResetPasswordPage = () => {
     const navigate = useNavigate();
@@ -19,21 +23,14 @@ const ResetPasswordPage = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const data = await authService.verifyResetOTP({ email: tempEmail, otp }); // Pass object
-            // backend returns { success, data: { ... } } via api service wrapper in new authStore? 
-            // wait, authService methods return { success: true, data: response.data } OR { success: false, error }
+            const data = await authService.verifyResetOTP({ email: tempEmail, otp });
 
             if (data.success) {
-                // The actual data is in data.data
                 const responseData = data.data;
-                // Check token
                 if (responseData.token || responseData.resetToken) {
                     setResetToken(responseData.token || responseData.resetToken);
                     setStep(2);
                 } else {
-                    // Assuming success means verified, maybe token is not needed?
-                    // But resetPassword needs it.
-                    // Let's assume otp is token if not returned (unlikely)
                     setStep(2);
                 }
             } else {
@@ -56,7 +53,7 @@ const ResetPasswordPage = () => {
         setError(null);
         try {
             const result = await authService.resetPassword({
-                resetToken: resetToken, // backend expects resetToken
+                resetToken: resetToken,
                 newPassword: passwords.newPassword,
                 confirmPassword: passwords.confirmPassword
             });
@@ -74,68 +71,86 @@ const ResetPasswordPage = () => {
     };
 
     return (
-        <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-bold text-gray-900 font-heading">
-                        {step === 1 ? 'Verify Code' : 'Set New Password'}
-                    </h2>
-                </div>
-
-                {error && (
-                    <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm text-center">
-                        {error}
+        <AuthLayout
+            title={step === 1 ? 'Verify Code' : 'Set New Password'}
+            subtitle={step === 1 ? `We've sent a code to ${tempEmail}` : 'Create a strong password for your account'}
+        >
+            {error && (
+                <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-none text-sm mb-6 flex items-start animate-fade-in">
+                    <div className="flex-shrink-0 mr-3">
+                        <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
                     </div>
-                )}
+                    <span>{error}</span>
+                </div>
+            )}
 
-                {step === 1 ? (
-                    <form className="mt-8 space-y-6" onSubmit={handleVerifyOtp}>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">
-                                Enter verification code sent to {tempEmail}
-                            </label>
-                            <input
-                                type="text"
-                                required
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm text-center tracking-widest text-2xl"
-                                maxLength={6}
-                            />
-                        </div>
-                        <button type="submit" disabled={isLoading} className="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary disabled:opacity-50 transition-colors">
-                            {isLoading ? 'Verifying...' : 'Verify Code'}
-                        </button>
-                    </form>
-                ) : (
-                    <form className="mt-8 space-y-6" onSubmit={handleResetPassword}>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">New Password</label>
-                            <input
-                                type="password"
-                                required
-                                value={passwords.newPassword}
-                                onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                            <input
-                                type="password"
-                                required
-                                value={passwords.confirmPassword}
-                                onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
-                            />
-                        </div>
-                        <button type="submit" disabled={isLoading} className="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary disabled:opacity-50 transition-colors">
-                            {isLoading ? 'Resetting...' : 'Reset Password'}
-                        </button>
-                    </form>
-                )}
-            </div>
-        </div>
+            {step === 1 ? (
+                <form className="space-y-6" onSubmit={handleVerifyOtp}>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Verification Code
+                        </label>
+                        <input
+                            type="text"
+                            required
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            className="block w-full px-4 py-3 border border-gray-300 rounded-none bg-gray-50/50 text-center text-3xl tracking-[0.5em] font-bold focus:outline-none focus:bg-white focus:border-primary transition-all duration-300 placeholder-gray-300"
+                            maxLength={6}
+                            placeholder="······"
+                        />
+                    </div>
+
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        fullWidth
+                        loading={isLoading}
+                        size="lg"
+                        className="shadow-none hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out mt-4"
+                    >
+                        Verify Code
+                        {!isLoading && <ArrowRight size={18} className="ml-2 inline-block" />}
+                    </Button>
+                </form>
+            ) : (
+                <form className="space-y-6" onSubmit={handleResetPassword}>
+                    <Input
+                        label="New Password"
+                        type="password"
+                        icon={Lock}
+                        required
+                        value={passwords.newPassword}
+                        onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                        placeholder="New password"
+                    />
+
+                    <Input
+                        label="Confirm Password"
+                        type="password"
+                        icon={CheckCircle}
+                        required
+                        value={passwords.confirmPassword}
+                        onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+                        placeholder="Confirm new password"
+                    />
+
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        fullWidth
+                        loading={isLoading}
+                        size="lg"
+                        className="shadow-none hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out mt-4"
+                    >
+                        Reset Password
+                        {!isLoading && <Key size={18} className="ml-2 inline-block" />}
+                    </Button>
+                </form>
+            )}
+        </AuthLayout>
     );
 };
 

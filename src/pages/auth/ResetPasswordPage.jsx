@@ -56,7 +56,7 @@ const ResetPasswordPage = () => {
         setError(null);
         try {
             const result = await authService.resetPassword({
-                token: resetToken, // backend expects token in body? Request object is ResetPasswordWithTokenRequest(token, newPassword, confirmPassword)
+                resetToken: resetToken, // backend expects resetToken
                 newPassword: passwords.newPassword,
                 confirmPassword: passwords.confirmPassword
             });

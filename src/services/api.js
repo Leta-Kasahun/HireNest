@@ -20,11 +20,11 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
-    
+
     if (token && !isTokenExpired(token)) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
   (error) => {
@@ -39,11 +39,11 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     // Handle 401 Unauthorized - attempt token refresh
-    if (error.response?.status === HTTP_STATUS.UNAUTHORIZED && !originalRequest._retry) {
+    if (error.response?.status === HTTP_STATUS.UNAUTHORIZED && !originalRequest._retry && !originalRequest.url.includes('/auth/refresh')) {
       originalRequest._retry = true;
-      
+
       try {
         // Attempt to refresh token
         const response = await axios.post(
@@ -51,9 +51,9 @@ api.interceptors.response.use(
           {},
           { withCredentials: true }
         );
-        
+
         const { accessToken } = response.data;
-        
+
         if (accessToken) {
           setAccessToken(accessToken);
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -66,12 +66,12 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-    
+
     // Handle 403 Forbidden
     if (error.response?.status === HTTP_STATUS.FORBIDDEN) {
       console.error('Access forbidden');
     }
-    
+
     return Promise.reject(error);
   }
 );

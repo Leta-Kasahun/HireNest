@@ -9,6 +9,7 @@ const useAuthStore = create((set, get) => ({
   // State
   user: null,
   isAuthenticated: false,
+  isCheckingAuth: true,
   isLoading: false,
   error: null,
   tempEmail: null, // For OTP flows
@@ -63,6 +64,11 @@ const useAuthStore = create((set, get) => ({
       }
     }
 
+    // Double check memory token in case it was set by another process (e.g. Google Callback) while we were waiting
+    if (!token) {
+      token = getAccessToken();
+    }
+
     if (token) {
       const user = getUserFromToken(token);
       if (user) {
@@ -70,6 +76,7 @@ const useAuthStore = create((set, get) => ({
           user,
           isAuthenticated: true,
           isLoading: false,
+          isCheckingAuth: false
         });
         return;
       }
@@ -79,6 +86,7 @@ const useAuthStore = create((set, get) => ({
       user: null,
       isAuthenticated: false,
       isLoading: false,
+      isCheckingAuth: false
     });
   },
 

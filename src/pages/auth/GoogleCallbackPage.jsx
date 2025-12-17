@@ -25,7 +25,7 @@ const GoogleCallbackPage = () => {
             // Error or invalid callback
             navigate(ROUTES.LOGIN);
         }
-    }, [searchParams, setUser, navigate]);
+    }, [searchParams, socialLogin, navigate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center">

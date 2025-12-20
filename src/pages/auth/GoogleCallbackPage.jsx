@@ -30,12 +30,19 @@ const GoogleCallbackPage = () => {
 
     return (
         <AuthLayout
-            title="Processing Login"
-            subtitle="Please wait while we set things up..."
+            title="Authenticating..."
+            subtitle="Securely connecting with Google to sync your profile"
         >
-            <div className="flex flex-col items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-                <p className="text-gray-500 text-sm">Validating credentials...</p>
+            <div className="flex flex-col items-center justify-center py-20">
+                <div className="relative w-20 h-20 mb-8">
+                    <div className="absolute inset-0 border-4 border-secondary/20 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-8 h-8 bg-secondary/10 rounded-full animate-pulse"></div>
+                    </div>
+                </div>
+                <p className="text-primary dark:text-gray-300 font-bold text-lg animate-pulse tracking-wide">Syncing your account...</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">This will only take a moment.</p>
             </div>
         </AuthLayout>
     );

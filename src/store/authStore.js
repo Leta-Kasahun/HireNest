@@ -13,6 +13,7 @@ const useAuthStore = create((set, get) => ({
   isLoading: false,
   error: null,
   tempEmail: null, // For OTP flows
+  tempToken: null, // For role selection flow
 
   /**
    * Set temp email for OTP
@@ -127,6 +128,8 @@ const useAuthStore = create((set, get) => ({
       if (result.data.token) {
         const user = getUserFromToken(result.data.token);
         set({ user, isAuthenticated: true, isLoading: false });
+      } else if (result.data.needsRoleSelection && result.data.tempToken) {
+        set({ tempToken: result.data.tempToken, isLoading: false });
       } else {
         set({ isLoading: false });
       }
@@ -187,6 +190,19 @@ const useAuthStore = create((set, get) => ({
     if (result.success && result.data.token) {
       const user = getUserFromToken(result.data.token);
       set({ user, isAuthenticated: true, isLoading: false });
+      return result.data;
+    } else {
+      set({ error: result.error.message, isLoading: false });
+      throw new Error(result.error.message);
+    }
+  },
+
+  completeRegistrationAction: async (roleData) => {
+    set({ isLoading: true, error: null });
+    const result = await authService.completeRegistration(roleData);
+    if (result.success && result.data.token) {
+      const user = getUserFromToken(result.data.token);
+      set({ user, isAuthenticated: true, isLoading: false, tempToken: null });
       return result.data;
     } else {
       set({ error: result.error.message, isLoading: false });

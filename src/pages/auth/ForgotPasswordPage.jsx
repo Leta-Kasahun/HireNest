@@ -38,11 +38,11 @@ const ForgotPasswordPage = () => {
     return (
         <AuthLayout
             title="Reset Password"
-            subtitle="Enter your email to receive a reset code"
-            backButton={false} // Custom back link provided below
+            subtitle="Enter your email to receive a secure verification code"
+            backButton={false}
         >
             {error && (
-                <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-none text-sm mb-6 flex items-start animate-fade-in">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm mb-6 flex items-start animate-fade-in shadow-sm">
                     <div className="flex-shrink-0 mr-3">
                         <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -71,14 +71,14 @@ const ForgotPasswordPage = () => {
                     fullWidth
                     loading={isLoading}
                     size="lg"
-                    className="shadow-none hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out"
+                    className="!bg-secondary hover:!bg-secondary-dark !rounded-full shadow-lg shadow-secondary/20 transition-all font-bold"
                 >
                     {isLoading ? 'Sending...' : 'Send Reset Code'}
                     {!isLoading && <ArrowRight size={18} className="ml-2 inline-block" />}
                 </Button>
 
                 <div className="text-center pt-2">
-                    <Link to={ROUTES.LOGIN} className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary transition-colors group">
+                    <Link to={ROUTES.LOGIN} className="inline-flex items-center text-sm font-bold text-gray-500 hover:text-secondary dark:text-gray-400 dark:hover:text-secondary-light transition-colors group">
                         <ArrowLeft size={16} className="mr-2 transform group-hover:-translate-x-1 transition-transform" />
                         Back to Login
                     </Link>

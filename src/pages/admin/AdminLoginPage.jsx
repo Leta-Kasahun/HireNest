@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import { ROUTES } from '../../config/constants';
+import AuthLayout from '../../components/AuthLayout';
+import Input from '../../components/Input';
+import Button from '../../components/Button';
+import { Mail, Lock, ShieldAlert } from 'lucide-react';
 
 const AdminLoginPage = () => {
     const navigate = useNavigate();
@@ -19,82 +23,80 @@ const AdminLoginPage = () => {
         e.preventDefault();
         try {
             await adminLogin(formData);
-            // Admin login step 1 success -> redirect to verify OTP
             navigate(ROUTES.ADMIN_VERIFY_OTP);
         } catch (err) {
-            // Error handled in store
+            // Error
         }
     };
 
     return (
-        <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-800">
-                <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-bold text-gray-900 font-heading">
-                        Admin Portal
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Authorized personnel only
-                    </p>
+        <AuthLayout
+            title="Admin Access"
+            subtitle="Secure portal for HireNest administrators and moderators"
+        >
+            <div className="flex items-center justify-center mb-8 px-4 py-2 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-full w-fit mx-auto animate-pulse">
+                <ShieldAlert size={16} className="text-red-600 dark:text-red-400 mr-2" />
+                <span className="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-widest">Restricted Zone</span>
+            </div>
+
+            {error && (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm mb-6 flex items-start animate-fade-in shadow-sm">
+                    <div className="flex-shrink-0 mr-3">
+                        <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                    <span>{error}</span>
+                </div>
+            )}
+
+            <form className="space-y-6" onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                    <Input
+                        label="Admin Email"
+                        id="email"
+                        name="email"
+                        type="email"
+                        icon={Mail}
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="admin@hirenest.com"
+                    />
+
+                    <Input
+                        label="Password"
+                        id="password"
+                        name="password"
+                        type="password"
+                        icon={Lock}
+                        required
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="••••••••"
+                    />
                 </div>
 
-                {error && (
-                    <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm text-center">
-                        {error}
-                    </div>
-                )}
+                <div className="pt-2">
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        fullWidth
+                        loading={isLoading}
+                        size="lg"
+                        className="!bg-primary hover:!bg-primary-dark !rounded-full shadow-lg shadow-primary/20 transition-all font-bold py-4"
+                    >
+                        {isLoading ? 'Decrypting...' : 'Secure Authorization'}
+                    </Button>
+                </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email address
-                            </label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                required
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Password
-                            </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors"
-                        >
-                            {isLoading ? 'Processing...' : 'Admin Login'}
-                        </button>
-                    </div>
-
-                    <div className="text-center">
-                        <Link to={ROUTES.LOGIN} className="text-xs text-gray-400 hover:text-gray-600">
-                            User Login
-                        </Link>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div className="text-center pt-4">
+                    <Link to={ROUTES.LOGIN} className="text-sm font-bold text-gray-500 hover:text-secondary dark:text-gray-400 dark:hover:text-secondary-light transition-colors underline underline-offset-4 decoration-current/30">
+                        Return to Public Portal
+                    </Link>
+                </div>
+            </form>
+        </AuthLayout>
     );
 };
 

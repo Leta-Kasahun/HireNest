@@ -23,6 +23,8 @@ const VerifyOtpPage = () => {
             const data = await verifyOtp(otp);
             if (data.token) {
                 navigate(ROUTES.DASHBOARD);
+            } else if (data.needsRoleSelection) {
+                navigate(ROUTES.SELECT_ROLE);
             } else {
                 navigate(ROUTES.LOGIN);
             }
@@ -35,13 +37,13 @@ const VerifyOtpPage = () => {
         <AuthLayout
             title="Verify Your Email"
             subtitle={
-                <span>
-                    We sent a code to <span className="font-bold text-gray-800">{tempEmail}</span>
+                <span className="dark:text-gray-400">
+                    We've sent a 6-digit verification code to <span className="font-bold text-primary dark:text-secondary-light">{tempEmail}</span>
                 </span>
             }
         >
             {error && (
-                <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-none text-sm mb-6 flex items-start animate-fade-in">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm mb-6 flex items-start animate-fade-in shadow-sm">
                     <div className="flex-shrink-0 mr-3">
                         <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -51,38 +53,48 @@ const VerifyOtpPage = () => {
                 </div>
             )}
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-8" onSubmit={handleSubmit}>
                 <div className="relative">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Verification Code
+                    <label className="block text-sm font-semibold text-primary dark:text-gray-300 mb-4 text-center uppercase tracking-widest">
+                        Enter Verification Code
                     </label>
-                    <div className="relative">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                            <ShieldCheck size={20} />
+                    <div className="relative group">
+                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-secondary transition-colors duration-300 z-10">
+                            <ShieldCheck size={24} />
                         </div>
                         <input
                             type="text"
                             required
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
-                            className="block w-full pl-12 pr-4 py-3 border border-gray-300 rounded-none bg-gray-50/50 text-center text-3xl tracking-[0.5em] font-bold focus:outline-none focus:bg-white focus:border-primary transition-all duration-300 placeholder-gray-300"
-                            placeholder="······"
+                            className="block w-full pl-16 pr-4 py-5 border-2 border-gray-100 dark:border-gray-700 rounded-3xl bg-gray-50/30 dark:bg-gray-800/50 text-center text-4xl tracking-[0.5em] font-extrabold text-primary dark:text-white focus:outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-secondary transition-all duration-500 shadow-inner placeholder-gray-200 dark:placeholder-gray-700"
+                            placeholder="000000"
                             maxLength={6}
                         />
                     </div>
                 </div>
 
-                <Button
-                    type="submit"
-                    variant="primary"
-                    fullWidth
-                    loading={isLoading}
-                    size="lg"
-                    className="shadow-none hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out mt-4"
-                >
-                    Verify Email
-                    {!isLoading && <ArrowRight size={18} className="ml-2 inline-block" />}
-                </Button>
+                <div className="space-y-4">
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        fullWidth
+                        loading={isLoading}
+                        size="lg"
+                        className="!bg-secondary hover:!bg-secondary-dark !rounded-full shadow-xl shadow-secondary/20 transition-all transform hover:-translate-y-1 py-5 text-lg font-bold"
+                    >
+                        Verify & Continue
+                        {!isLoading && <ArrowRight size={20} className="ml-3 inline-block animate-pulse" />}
+                    </Button>
+
+                    <button
+                        type="button"
+                        className="w-full text-sm text-gray-500 hover:text-secondary dark:hover:text-secondary-light font-medium transition-colors py-2"
+                        onClick={() => {/* Implement Resend logic if needed */ }}
+                    >
+                        Didn't receive a code? <span className="underline decoration-secondary/30 underline-offset-4">Resend OTP</span>
+                    </button>
+                </div>
             </form>
         </AuthLayout>
     );

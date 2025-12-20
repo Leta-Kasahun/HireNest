@@ -27,12 +27,12 @@ export const register = async (userData) => {
 export const verifyEmail = async (otpData) => {
   try {
     const response = await api.post('/api/v1/auth/verify-otp', otpData);
-    
+
     // Store access token if provided
     if (response.data.token) {
       setAccessToken(response.data.token);
     }
-    
+
     return { success: true, data: response.data };
   } catch (error) {
     return { success: false, error: handleApiError(error) };
@@ -47,12 +47,12 @@ export const verifyEmail = async (otpData) => {
 export const login = async (credentials) => {
   try {
     const response = await api.post('/api/v1/auth/login', credentials);
-    
+
     // Store access token
     if (response.data.token) {
       setAccessToken(response.data.token);
     }
-    
+
     return { success: true, data: response.data };
   } catch (error) {
     return { success: false, error: handleApiError(error) };
@@ -124,11 +124,11 @@ export const resetPassword = async (resetData) => {
 export const refreshToken = async () => {
   try {
     const response = await api.post('/api/v1/auth/refresh');
-    
+
     if (response.data.accessToken) {
       setAccessToken(response.data.accessToken);
     }
-    
+
     return { success: true, data: response.data };
   } catch (error) {
     clearAccessToken();
@@ -158,11 +158,11 @@ export const adminLogin = async (credentials) => {
 export const verifyAdminOTP = async (otpData) => {
   try {
     const response = await api.post('/api/v1/admin/auth/verify-otp', otpData);
-    
+
     if (response.data.token) {
       setAccessToken(response.data.token);
     }
-    
+
     return { success: true, data: response.data };
   } catch (error) {
     return { success: false, error: handleApiError(error) };
@@ -176,11 +176,11 @@ export const verifyAdminOTP = async (otpData) => {
 export const handleGoogleOAuthSuccess = async () => {
   try {
     const response = await api.get('/api/v1/auth/oauth-success');
-    
+
     if (response.data.token) {
       setAccessToken(response.data.token);
     }
-    
+
     return { success: true, data: response.data };
   } catch (error) {
     return { success: false, error: handleApiError(error) };
@@ -197,11 +197,30 @@ export const selectRole = async (roleData) => {
     const response = await api.post('/api/v1/auth/select-role', null, {
       params: roleData,
     });
-    
+
     if (response.data.token) {
       setAccessToken(response.data.token);
     }
-    
+
+    return { success: true, data: response.data };
+  } catch (error) {
+    return { success: false, error: handleApiError(error) };
+  }
+};
+
+/**
+ * Complete registration with role selection (for standard auth)
+ * @param {Object} data - { token, userType }
+ * @returns {Promise<Object>} Response
+ */
+export const completeRegistration = async (data) => {
+  try {
+    const response = await api.post('/api/v1/auth/complete-registration', data);
+
+    if (response.data.token) {
+      setAccessToken(response.data.token);
+    }
+
     return { success: true, data: response.data };
   } catch (error) {
     return { success: false, error: handleApiError(error) };

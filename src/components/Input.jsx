@@ -33,11 +33,11 @@ const Input = ({
 
   const baseClasses = `
     w-full px-4 py-3 border rounded-none 
-    bg-gray-50/50 text-text-primary placeholder-gray-400
-    focus:outline-none focus:bg-white transition-all duration-300 ease-out
+    bg-gray-50/50 dark:bg-gray-800/50 text-text-primary dark:text-white placeholder-gray-400
+    focus:outline-none focus:bg-white dark:focus:bg-gray-800 transition-all duration-300 ease-out
     ${borderColor}
     ${focused ? 'ring-0' : ''}
-    ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}
+    ${disabled ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 cursor-not-allowed' : ''}
     ${Icon ? 'pl-11' : ''}
     ${className}
   `;
@@ -47,7 +47,7 @@ const Input = ({
       {label && (
         <label
           htmlFor={name}
-          className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${error ? 'text-red-500' : 'text-primary'}`}
+          className={`block text-sm font-semibold mb-2 transition-colors duration-200 ${error ? 'text-red-500' : 'text-primary dark:text-gray-300'}`}
         >
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}

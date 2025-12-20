@@ -18,6 +18,8 @@ import SelectRolePage from './pages/auth/SelectRolePage';
 // Admin Pages
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminVerifyOtpPage from './pages/admin/AdminVerifyOtpPage';
+// Seeker Pages
+import SeekerProfilePage from './pages/seeker/SeekerProfilePage';
 
 import useAuthStore from './store/authStore';
 import { ROUTES } from './config/constants';
@@ -98,6 +100,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles="SEEKER">
                   <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={ROUTES.SEEKER.PROFILE}
+              element={
+                <ProtectedRoute allowedRoles="SEEKER">
+                  <SeekerProfilePage />
                 </ProtectedRoute>
               }
             />

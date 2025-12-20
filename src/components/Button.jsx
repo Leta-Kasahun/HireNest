@@ -18,6 +18,7 @@ const Button = ({
   size = 'md',
   disabled = false,
   loading = false,
+  isLoading = false,
   fullWidth = false,
   type = 'button',
   onClick,
@@ -25,6 +26,7 @@ const Button = ({
   className = '',
   ...props
 }) => {
+  const isButtonLoading = loading || isLoading;
   const baseClasses = 'font-medium rounded-none transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transform hover:-translate-y-1 active:translate-y-0';
 
   const variantClasses = {
@@ -50,11 +52,11 @@ const Button = ({
     <button
       type={type}
       className={classes}
-      disabled={disabled || loading}
+      disabled={disabled || isButtonLoading}
       onClick={onClick}
       {...props}
     >
-      {loading ? (
+      {isButtonLoading ? (
         <span className="flex items-center justify-center">
           <svg className="animate-spin -ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

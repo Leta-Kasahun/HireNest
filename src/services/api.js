@@ -9,9 +9,7 @@ const api = axios.create({
   baseURL: API_CONFIG.BASE_URL,
   timeout: API_CONFIG.TIMEOUT,
   withCredentials: true, // Important for HttpOnly cookies
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: {},
 });
 
 /**
@@ -21,13 +19,28 @@ api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
 
-    if (token && !isTokenExpired(token)) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (token) {
+      if (!isTokenExpired(token)) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } else {
+      // Don't warn for refresh endpoint or public endpoints
+      const isPublic = [
+        '/api/v1/auth/refresh',
+        '/api/v1/auth/login',
+        '/api/v1/auth/register',
+        '/api/v1/public/'
+      ].some(path => config.url && config.url.includes(path));
+
+      if (!isPublic) {
+        console.warn('No token found in memory for request to:', config.url);
+      }
     }
 
     return config;
   },
   (error) => {
+    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );

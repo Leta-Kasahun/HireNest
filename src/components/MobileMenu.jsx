@@ -57,6 +57,16 @@ const MobileMenu = ({
                             Dashboard
                         </Link>
 
+                        {user?.role === 'ROLE_SEEKER' && (
+                            <Link
+                                to={ROUTES.SEEKER.PROFILE}
+                                className="block text-lg font-medium text-primary hover:text-secondary"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                My Profile
+                            </Link>
+                        )}
+
                         <div className="py-4 border-t border-gray-100 mt-4">
                             <div className="text-sm text-text-secondary mb-3">
                                 Signed in as <span className="font-medium text-primary">{user?.email}</span>

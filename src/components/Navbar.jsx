@@ -69,9 +69,16 @@ const Navbar = () => {
                   </Link>
                 </>
               ) : (
-                <Link to={ROUTES.DASHBOARD} className={navLinkClass(ROUTES.DASHBOARD)}>
-                  Dashboard
-                </Link>
+                <>
+                  <Link to={ROUTES.DASHBOARD} className={navLinkClass(ROUTES.DASHBOARD)}>
+                    Dashboard
+                  </Link>
+                  {user?.role === 'ROLE_SEEKER' && (
+                    <Link to={ROUTES.SEEKER.PROFILE} className={navLinkClass(ROUTES.SEEKER.PROFILE)}>
+                      My Profile
+                    </Link>
+                  )}
+                </>
               )}
             </div>
 

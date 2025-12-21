@@ -19,9 +19,19 @@ api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
 
+    console.log('=== API Request ===');
+    console.log('🌐 URL:', config.url);
+    console.log('📤 Method:', config.method?.toUpperCase());
+    console.log('🔑 Token exists:', !!token);
+
     if (token) {
       if (!isTokenExpired(token)) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log('✅ Token added to request');
+        console.log('🔐 Token preview:', token.substring(0, 20) + '...');
+      } else {
+        console.warn('⚠️ Token is expired!');
+        console.warn('⚠️ This request will likely fail with 401');
       }
     } else {
       // Don't warn for refresh endpoint or public endpoints
@@ -33,14 +43,18 @@ api.interceptors.request.use(
       ].some(path => config.url && config.url.includes(path));
 
       if (!isPublic) {
-        console.warn('No token found in memory for request to:', config.url);
+        console.error('❌ No token found for protected endpoint:', config.url);
+        console.error('⚠️ This will result in 401 Unauthorized!');
+        console.error('💡 Check if auth is initialized before calling this endpoint');
+      } else {
+        console.log('ℹ️ Public endpoint - no auth required');
       }
     }
 
     return config;
   },
   (error) => {
-    console.error('Request interceptor error:', error);
+    console.error('❌ Request interceptor error:', error);
     return Promise.reject(error);
   }
 );

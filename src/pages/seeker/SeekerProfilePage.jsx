@@ -8,13 +8,20 @@ import useSeekerStore from '../../store/seekerStore';
 import useAuthStore from '../../store/authStore';
 import BasicInfoForm from '../../components/seeker/BasicInfoForm';
 import AddressForm from '../../components/seeker/AddressForm';
+import BioSection from '../../components/seeker/details/BioSection';
+import SkillSection from '../../components/seeker/details/SkillSection';
+import ProjectSection from '../../components/seeker/details/ProjectSection';
+import CVSection from '../../components/seeker/details/CVSection';
+import SectorSection from '../../components/seeker/details/SectorSection';
+import TagSection from '../../components/seeker/details/TagSection';
+import SocialLinksSection from '../../components/seeker/details/SocialLinksSection';
 import Button from '../../components/Button';
 import Alert from '../../components/Alert';
 
 const SeekerProfilePage = () => {
-    const { user } = useAuthStore();
+    const { user, isCheckingAuth, isAuthenticated } = useAuthStore();
     const {
-        profile, isLoading, error, fetchProfile,
+        profile, skills, projects, isLoading, error, fetchAllProfileData,
         saveBasicInfo, uploadImage, removeImage,
         saveAddress, removeAddress
     } = useSeekerStore();
@@ -24,8 +31,18 @@ const SeekerProfilePage = () => {
     const fileInputRef = useRef(null);
 
     useEffect(() => {
-        fetchProfile();
-    }, [fetchProfile]);
+        console.log('🔍 [PROFILE] Auth Check:', { isCheckingAuth, isAuthenticated, user: !!user });
+
+        // CRITICAL FIX: Only fetch data after auth is initialized AND user is authenticated
+        if (!isCheckingAuth && isAuthenticated && user) {
+            console.log('🔍 [PROFILE] ✅ Auth complete, fetching profile data...');
+            fetchAllProfileData();
+        } else if (!isCheckingAuth && !isAuthenticated) {
+            console.log('🔍 [PROFILE] ❌ Not authenticated, skipping data fetch');
+        } else {
+            console.log('🔍 [PROFILE] ⏳ Still checking auth, waiting...');
+        }
+    }, [isCheckingAuth, isAuthenticated, user, fetchAllProfileData]);
 
     const handleBasicInfoSave = async (data) => {
         try {
@@ -301,6 +318,15 @@ const SeekerProfilePage = () => {
                                 </div>
                             )}
                         </section>
+
+                        {/* Professional Details */}
+                        <BioSection />
+                        <TagSection />
+                        <SectorSection />
+                        <SkillSection />
+                        <ProjectSection />
+                        <SocialLinksSection />
+                        <CVSection />
                     </div>
 
                     {/* Right Column - sidebar stuff */}
@@ -345,11 +371,17 @@ const SeekerProfilePage = () => {
                                     </div>
                                     <span className={profile?.address ? 'text-white' : 'text-white/40'}>Location Details</span>
                                 </li>
-                                <li className="flex items-center gap-3 text-sm text-white/40">
-                                    <div className="p-1 rounded-full bg-white/10">
-                                        <Plus size={14} />
+                                <li className="flex items-center gap-3 text-sm">
+                                    <div className={`p-1 rounded-full ${skills.length > 0 ? 'bg-accent/20 text-accent' : 'bg-white/10 text-white/40'}`}>
+                                        <CheckCircle2 size={14} />
                                     </div>
-                                    <span>Education & Skills (Coming Soon)</span>
+                                    <span className={skills.length > 0 ? 'text-white' : 'text-white/40'}>Technical Skills</span>
+                                </li>
+                                <li className="flex items-center gap-3 text-sm">
+                                    <div className={`p-1 rounded-full ${projects.length > 0 ? 'bg-accent/20 text-accent' : 'bg-white/10 text-white/40'}`}>
+                                        <CheckCircle2 size={14} />
+                                    </div>
+                                    <span className={projects.length > 0 ? 'text-white' : 'text-white/40'}>Portfolio Projects</span>
                                 </li>
                             </ul>
                         </div>

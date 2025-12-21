@@ -49,18 +49,28 @@ const useAuthStore = create((set, get) => ({
    * Tries to get token from memory or refresh it from backend cookie
    */
   initializeAuth: async () => {
+    console.log('🔐 [AUTH] Initializing authentication...');
+
     // 1. Check memory token
     let token = getAccessToken();
+    console.log('🔐 [AUTH] Memory token exists:', !!token);
 
     // 2. If no memory token, try silent refresh (cookie)
     if (!token) {
+      console.log('🔐 [AUTH] No memory token, attempting refresh from cookie...');
       try {
         const refreshResult = await authService.refreshToken();
+        console.log('🔐 [AUTH] Refresh result:', refreshResult.success ? 'SUCCESS' : 'FAILED');
+
         if (refreshResult.success && refreshResult.data.accessToken) {
           token = refreshResult.data.accessToken;
+          console.log('🔐 [AUTH] ✅ Token refreshed successfully');
           // setAccessToken is already called in authService.refreshToken
+        } else {
+          console.log('🔐 [AUTH] ❌ Refresh failed - no accessToken in response');
         }
       } catch (err) {
+        console.error('🔐 [AUTH] ❌ Refresh error:', err.message);
         // Failed to refresh, user is not logged in
       }
     }
@@ -68,11 +78,15 @@ const useAuthStore = create((set, get) => ({
     // Double check memory token in case it was set by another process (e.g. Google Callback) while we were waiting
     if (!token) {
       token = getAccessToken();
+      console.log('🔐 [AUTH] Double-check memory token:', !!token);
     }
 
     if (token) {
       const user = getUserFromToken(token);
+      console.log('🔐 [AUTH] User from token:', user);
+
       if (user) {
+        console.log('🔐 [AUTH] ✅ Authentication successful for:', user.email);
         set({
           user,
           isAuthenticated: true,
@@ -80,9 +94,12 @@ const useAuthStore = create((set, get) => ({
           isCheckingAuth: false
         });
         return;
+      } else {
+        console.error('🔐 [AUTH] ❌ Token exists but user extraction failed');
       }
     }
 
+    console.log('🔐 [AUTH] ❌ No valid authentication found');
     set({
       user: null,
       isAuthenticated: false,

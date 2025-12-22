@@ -386,3 +386,15 @@ export const deleteCVFile = async () => {
         return { success: false, error: error.response?.data || { message: 'Failed to delete CV' } };
     }
 };
+
+/**
+ * Get full seeker profile by ID (for employers)
+ */
+export const getFullProfile = async (seekerId) => {
+    try {
+        const response = await api.get(`api/v1/seekers/profile/${seekerId}`);
+        return { success: true, data: response.data };
+    } catch (error) {
+        return { success: false, error: error.response?.data || { message: 'Failed to fetch full seeker profile' } };
+    }
+};

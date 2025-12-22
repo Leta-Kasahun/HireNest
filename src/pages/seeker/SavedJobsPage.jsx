@@ -29,7 +29,7 @@ const SavedJobsPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-gray-900 pt-8 pb-20 px-4 md:px-8">
+        <div className="pb-20">
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                     <div>
@@ -78,8 +78,8 @@ const SavedJobsPage = () => {
                                 key={i}
                                 onClick={() => setCurrentPage(i)}
                                 className={`w-12 h-12 rounded-2xl font-black transition-all ${currentPage === i
-                                        ? 'bg-secondary text-white shadow-xl shadow-secondary/20 scale-110'
-                                        : 'bg-white dark:bg-gray-800 text-gray-400 hover:text-primary dark:hover:text-white border border-gray-100 dark:border-gray-700'
+                                    ? 'bg-secondary text-white shadow-xl shadow-secondary/20 scale-110'
+                                    : 'bg-white dark:bg-gray-800 text-gray-400 hover:text-primary dark:hover:text-white border border-gray-100 dark:border-gray-700'
                                     }`}
                             >
                                 {i + 1}

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import useAuthStore from '../store/authStore';
 import useSeekerStore from '../store/seekerStore';
-import DashboardLayout from '../components/dashboard/DashboardLayout';
 import SeekerDashboard from '../features/dashboard/SeekerDashboard';
 import EmployerDashboard from '../features/dashboard/EmployerDashboard';
 import AdminDashboard from '../features/dashboard/AdminDashboard';
@@ -36,9 +35,9 @@ const DashboardPage = () => {
   };
 
   return (
-    <DashboardLayout>
+    <>
       {renderDashboard()}
-    </DashboardLayout>
+    </>
   );
 };
 

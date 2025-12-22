@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
-    ArrowLeft, FileText, Mail, DollarSign,
-    User, CheckCircle2, XCircle, Clock,
-    ExternalLink, MessageSquare, Info
+    ArrowLeft, FileText, DollarSign,
+    User, CheckCircle2, XCircle, ExternalLink
 } from 'lucide-react';
 import applicationService from '../../services/applicationService';
 import Button from '../../components/Button';
+import SeekerPublicProfileModal from '../../components/modals/SeekerPublicProfileModal';
 
 const ApplicantsPage = () => {
     const [searchParams] = useSearchParams();
@@ -15,6 +15,8 @@ const ApplicantsPage = () => {
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedApp, setSelectedApp] = useState(null);
+    const [showProfileModal, setShowProfileModal] = useState(false);
+    const [selectedSeekerId, setSelectedSeekerId] = useState(null);
 
     useEffect(() => {
         if (jobId) fetchApplications();
@@ -48,7 +50,7 @@ const ApplicantsPage = () => {
     );
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-gray-900 pt-24 pb-20 px-6 lg:px-12">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-gray-900 pt-32 pb-40 px-6 font-sans">
             <div className="max-w-7xl mx-auto">
                 <button
                     onClick={() => navigate('/jobs/manage')}
@@ -102,6 +104,15 @@ const ApplicantsPage = () => {
                                             <h2 className="text-4xl font-serif font-black text-primary dark:text-white mb-2">{selectedApp.seekerName}</h2>
                                             <div className="flex gap-3">
                                                 <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{selectedApp.status} Candidate</span>
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedSeekerId(selectedApp.seekerId);
+                                                        setShowProfileModal(true);
+                                                    }}
+                                                    className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-secondary hover:text-secondary-dark transition-colors"
+                                                >
+                                                    <ExternalLink size={12} /> View Full Profile
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -173,6 +184,12 @@ const ApplicantsPage = () => {
                     </div>
                 </div>
             </div>
+
+            <SeekerPublicProfileModal
+                isOpen={showProfileModal}
+                onClose={() => setShowProfileModal(false)}
+                seekerId={selectedSeekerId}
+            />
         </div>
     );
 };

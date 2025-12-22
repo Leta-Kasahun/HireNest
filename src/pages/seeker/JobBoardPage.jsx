@@ -55,7 +55,7 @@ const JobBoardPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-gray-900 pt-24 pb-20 px-6 lg:px-12">
+        <div className="pb-20">
             {/* Header Section */}
             <div className="max-w-7xl mx-auto mb-16">
                 <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">

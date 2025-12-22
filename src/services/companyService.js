@@ -23,6 +23,11 @@ const companyService = {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         return response.data;
+    },
+
+    getPublicProfile: async (profileId) => {
+        const response = await api.get(`/api/v1/company-profile/${profileId}`);
+        return response.data;
     }
 };
 

@@ -40,7 +40,7 @@ const MyApplicationsPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-gray-900 pt-24 pb-20 px-6 lg:px-12">
+        <div className="pb-20">
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
                     <div>

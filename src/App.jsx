@@ -8,6 +8,7 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import VerifyOtpPage from './pages/auth/VerifyOtpPage';
 import DashboardPage from './pages/DashboardPage';
+import DashboardLayout from './components/dashboard/DashboardLayout';
 
 // Auth Pages
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
@@ -69,21 +70,31 @@ function AppContent() {
     const dashboardPaths = [
       '/dashboard',
       '/admin/',
-      '/jobs',
-      '/applications',
+      // '/jobs', // Removed to allow Navbar on Job Board and Manage Jobs if needed, but Job Board uses DashboardNavigation? 
+      // actually JobBoard uses DashboardLayout, so we WANT valid Navbar hidden? 
+      // Wait, DashboardLayout HAS its own internal Navbar.
+      // If I want PostJob to use MAIN Navbar, I remove it from here.
+      // '/post-job', // REMOVED
+      '/applications', // Seeker applications
       '/messages',
       '/saved',
       '/my-jobs',
       '/work-diary',
       '/stats',
       '/earnings',
-      '/post-job',
       '/talent',
       '/contracts',
       '/reports',
       '/billing',
       '/settings'
     ];
+
+    // Special handling: 
+    // Seeker Job Board (/jobs) USES DashboardLayout -> Hide Main Navbar.
+    // Employer Manage Jobs (/jobs/manage) USES Main Navbar -> Show Main Navbar.
+    if (path === '/jobs' || path.startsWith('/jobs/') && !path.includes('/manage')) {
+      return false; // Hide Main Navbar for Seeker Jobs
+    }
 
     return !dashboardPaths.some(p => path.includes(p));
   }, [location.pathname]);
@@ -120,25 +131,25 @@ function AppContent() {
           <Route path={ROUTES.ADMIN_VERIFY_OTP} element={<AdminVerifyOtpPage />} />
 
           {/* Protected Routes - General Dashboard */}
-          <Route path={ROUTES.DASHBOARD} element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path={ROUTES.DASHBOARD} element={<ProtectedRoute><DashboardLayout><DashboardPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><PlaceholderPage title="Settings" /></ProtectedRoute>} />
           <Route path="/messages" element={<ProtectedRoute><PlaceholderPage title="Messages" /></ProtectedRoute>} />
 
           {/* Seeker Dashboard Routes */}
-          <Route path="/jobs" element={<ProtectedRoute allowedRoles="SEEKER"><JobBoardPage /></ProtectedRoute>} />
-          <Route path="/jobs/:id" element={<ProtectedRoute><JobDetailPage /></ProtectedRoute>} />
-          <Route path="/applications" element={<ProtectedRoute allowedRoles="SEEKER"><MyApplicationsPage /></ProtectedRoute>} />
-          <Route path="/saved" element={<ProtectedRoute allowedRoles="SEEKER"><SavedJobsPage /></ProtectedRoute>} />
-          <Route path={ROUTES.SEEKER.PROFILE} element={<ProtectedRoute allowedRoles="SEEKER"><SeekerProfilePage /></ProtectedRoute>} />
+          <Route path="/jobs" element={<ProtectedRoute allowedRoles="SEEKER"><DashboardLayout><JobBoardPage /></DashboardLayout></ProtectedRoute>} />
+          <Route path="/jobs/:id" element={<ProtectedRoute><DashboardLayout><JobDetailPage /></DashboardLayout></ProtectedRoute>} />
+          <Route path="/applications" element={<ProtectedRoute allowedRoles="SEEKER"><DashboardLayout><MyApplicationsPage /></DashboardLayout></ProtectedRoute>} />
+          <Route path="/saved" element={<ProtectedRoute allowedRoles="SEEKER"><DashboardLayout><SavedJobsPage /></DashboardLayout></ProtectedRoute>} />
+          <Route path={ROUTES.SEEKER.PROFILE} element={<ProtectedRoute allowedRoles="SEEKER"><DashboardLayout><SeekerProfilePage /></DashboardLayout></ProtectedRoute>} />
 
           {/* Employer Dashboard Routes */}
           <Route path="/post-job" element={<ProtectedRoute allowedRoles="EMPLOYER"><PostJobPage /></ProtectedRoute>} />
-          <Route path="/employer/profile" element={<ProtectedRoute allowedRoles="EMPLOYER"><CompanyProfilePage /></ProtectedRoute>} />
+          <Route path="/employer/profile" element={<ProtectedRoute allowedRoles="EMPLOYER"><DashboardLayout><CompanyProfilePage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/jobs/manage" element={<ProtectedRoute allowedRoles="EMPLOYER"><ManageJobsPage /></ProtectedRoute>} />
           <Route path="/applicants" element={<ProtectedRoute allowedRoles="EMPLOYER"><ApplicantsPage /></ProtectedRoute>} />
 
           {/* Admin Dashboard Routes */}
-          <Route path={ROUTES.ADMIN.DASHBOARD} element={<ProtectedRoute allowedRoles="ADMIN"><DashboardPage /></ProtectedRoute>} />
+          <Route path={ROUTES.ADMIN.DASHBOARD} element={<ProtectedRoute allowedRoles="ADMIN"><DashboardLayout><DashboardPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/admin/approvals" element={<ProtectedRoute allowedRoles="ADMIN"><ApprovalsPage /></ProtectedRoute>} />
           <Route path="/admin/analytics" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="Platform Analytics" /></ProtectedRoute>} />
           <Route path="/admin/users" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="User Management" /></ProtectedRoute>} />

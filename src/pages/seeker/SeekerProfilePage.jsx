@@ -104,7 +104,7 @@ const SeekerProfilePage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1C2D] pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="pb-12">
             <div className="max-w-5xl mx-auto">
                 {/* Status Alerts */}
                 {error && <Alert type="error" message={error} className="mb-6" />}

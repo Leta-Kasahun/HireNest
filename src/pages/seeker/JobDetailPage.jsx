@@ -13,6 +13,7 @@ import Button from '../../components/Button';
 import Input from '../../components/Input';
 import useAuthStore from '../../store/authStore';
 import useSeekerStore from '../../store/seekerStore';
+import CompanyPublicProfileModal from '../../components/modals/CompanyPublicProfileModal';
 
 const JobDetailPage = () => {
     const { id } = useParams();
@@ -32,6 +33,7 @@ const JobDetailPage = () => {
     const [hasApplied, setHasApplied] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [showCompanyModal, setShowCompanyModal] = useState(false);
 
     useEffect(() => {
         const fetchJobData = async () => {
@@ -127,7 +129,7 @@ const JobDetailPage = () => {
     if (!job) return null;
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-gray-900 pt-24 pb-20 px-6 lg:px-12">
+        <div className="pb-20">
             <div className="max-w-7xl mx-auto">
                 {/* Breadcrumbs / Back button */}
                 <button
@@ -149,8 +151,11 @@ const JobDetailPage = () => {
                             <div className="absolute -top-24 -right-24 w-64 h-64 bg-secondary/5 rounded-full blur-3xl pointer-events-none" />
 
                             <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative z-10">
-                                <div className="flex gap-6">
-                                    <div className="w-20 h-20 rounded-3xl bg-gray-50 dark:bg-gray-700 flex items-center justify-center border border-gray-100 dark:border-gray-600 overflow-hidden">
+                                <div
+                                    className="flex gap-6 cursor-pointer group/company"
+                                    onClick={() => setShowCompanyModal(true)}
+                                >
+                                    <div className="w-20 h-20 rounded-3xl bg-gray-50 dark:bg-gray-700 flex items-center justify-center border border-gray-100 dark:border-gray-600 overflow-hidden group-hover/company:shadow-lg transition-all group-hover/company:scale-105">
                                         {job.companyLogoUrl ? (
                                             <img
                                                 src={job.companyLogoUrl}
@@ -164,12 +169,14 @@ const JobDetailPage = () => {
                                         )}
                                     </div>
                                     <div>
-                                        <h1 className="text-4xl lg:text-5xl font-serif font-black text-primary dark:text-white mb-3">
+                                        <h1 className="text-4xl lg:text-5xl font-serif font-black text-primary dark:text-white mb-3 group-hover/company:text-secondary transition-colors">
                                             {job.title}
                                         </h1>
                                         <div className="flex items-center gap-2 text-sm font-heading font-medium text-secondary">
                                             <Building2 size={18} />
-                                            <span className="font-bold">{job.companyName}</span>
+                                            <span className="font-bold border-b border-transparent group-hover/company:border-secondary transition-colors">
+                                                {job.companyName}
+                                            </span>
                                             <span className="mx-2 text-gray-300">•</span>
                                             <ShieldCheck size={18} className="text-accent" />
                                             <span className="text-accent text-xs font-black uppercase">Verified Employer</span>
@@ -432,6 +439,12 @@ const JobDetailPage = () => {
                     </div>
                 </div>
             )}
+
+            <CompanyPublicProfileModal
+                isOpen={showCompanyModal}
+                onClose={() => setShowCompanyModal(false)}
+                companyId={job.companyProfileId}
+            />
         </div>
     );
 };

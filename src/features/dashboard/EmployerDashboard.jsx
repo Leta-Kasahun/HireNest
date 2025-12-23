@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Users,
     FileText,
@@ -16,26 +16,42 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CompanyVerificationWidget from '../../components/dashboard/CompanyVerificationWidget';
+import jobService from '../../services/jobService';
 
 const EmployerDashboard = ({ user }) => {
+    const [jobs, setJobs] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const data = await jobService.getMyJobs();
+            // Handle paginated response
+            setJobs(data?.content || data || []);
+        } catch (error) {
+            console.error('Error fetching employer jobs:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const activeJobsCount = jobs.filter(j => j.isActive).length;
+
     const stats = [
-        { label: 'Active Jobs', value: '8', icon: FileText, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-        { label: 'Total Applicants', value: '456', icon: Users, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
-        { label: 'Interviews', value: '14', icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-        { label: 'Urgent Tasks', value: '2', icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-500/10' },
+        { label: 'Active Jobs', value: activeJobsCount.toString(), icon: FileText, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+        { label: 'Total Applicants', value: '0', icon: Users, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+        { label: 'Interviews', value: '0', icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+        { label: 'Urgent Tasks', value: '1', icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-500/10' },
     ];
 
     const candidatePipeline = [
-        { stage: 'Portfolio Review', count: 120, trend: '+12%', color: 'from-blue-500 to-indigo-500' },
-        { stage: 'Tech Assessment', count: 85, trend: '+5%', color: 'from-amber-500 to-orange-500' },
-        { stage: 'Face to Face', count: 32, trend: '-2%', color: 'from-emerald-500 to-teal-500' },
-        { stage: 'Offer Stage', count: 8, trend: '+8%', color: 'from-rose-500 to-pink-500' },
-    ];
-
-    const activeJobs = [
-        { title: 'Senior Brand Designer', applicants: 45, new: 12, status: 'Active', posted: '3d ago', category: 'Creative' },
-        { title: 'Fullstack Node Developer', applicants: 28, new: 3, status: 'Active', posted: '1w ago', category: 'Engineering' },
-        { title: 'Product Growth Lead', applicants: 156, new: 0, status: 'Paused', posted: '2w ago', category: 'Marketing' },
+        { stage: 'Portfolio Review', count: 0, trend: '0%', color: 'from-blue-500 to-indigo-500' },
+        { stage: 'Tech Assessment', count: 0, trend: '0%', color: 'from-amber-500 to-orange-500' },
+        { stage: 'Face to Face', count: 0, trend: '0%', color: 'from-emerald-500 to-teal-500' },
+        { stage: 'Offer Stage', count: 0, trend: '0%', color: 'from-rose-500 to-pink-500' },
     ];
 
     return (
@@ -108,43 +124,46 @@ const EmployerDashboard = ({ user }) => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-white/5">
-                                {activeJobs.map((job, idx) => (
-                                    <tr key={idx} className="group hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer">
-                                        <td className="px-8 py-8">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1.5">{job.category}</span>
-                                                <span className="font-bold text-lg text-primary dark:text-white group-hover:text-secondary transition-colors italic">{job.title}</span>
-                                                <div className="flex items-center gap-2 mt-2">
-                                                    <Clock size={12} className="text-gray-300" />
-                                                    <span className="text-xs text-gray-400 font-medium whitespace-nowrap">Posted {job.posted}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-8">
-                                            <div className="flex items-center gap-4">
+                                {jobs.length > 0 ? (
+                                    jobs.map((job, idx) => (
+                                        <tr key={job.id || idx} className="group hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer">
+                                            <td className="px-8 py-8">
                                                 <div className="flex flex-col">
-                                                    <span className="text-2xl font-black text-primary dark:text-white leading-none">{job.applicants}</span>
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Total</span>
-                                                </div>
-                                                {job.new > 0 && (
-                                                    <div className="bg-emerald-500 text-white text-[10px] font-black px-2 py-1 rounded-lg animate-pulse shadow-lg shadow-emerald-500/20">
-                                                        +{job.new} NEW
+                                                    <span className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1.5">{job.category || 'General'}</span>
+                                                    <span className="font-bold text-lg text-primary dark:text-white group-hover:text-secondary transition-colors italic">{job.title}</span>
+                                                    <div className="flex items-center gap-2 mt-2">
+                                                        <Clock size={12} className="text-gray-300" />
+                                                        <span className="text-xs text-gray-400 font-medium whitespace-nowrap">Posted {new Date(job.createdAt).toLocaleDateString()}</span>
                                                     </div>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-8">
-                                            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border ${job.status === 'Active' ? 'bg-emerald-500/5 text-emerald-500 border-emerald-500/20' : 'bg-gray-100 dark:bg-white/10 text-gray-400 border-transparent'
-                                                }`}>
-                                                <div className={`w-1.5 h-1.5 rounded-full ${job.status === 'Active' ? 'bg-emerald-500 animate-ping' : 'bg-gray-400'}`}></div>
-                                                <span className="text-[10px] font-black uppercase tracking-widest">{job.status}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-8 text-right text-gray-300 group-hover:text-primary dark:group-hover:text-white transition-colors">
-                                            <MoreVertical size={20} className="ml-auto" />
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-8">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-2xl font-black text-primary dark:text-white leading-none">0</span>
+                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Total</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-8">
+                                                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border ${job.isActive ? 'bg-emerald-500/5 text-emerald-500 border-emerald-500/20' : 'bg-gray-100 dark:bg-white/10 text-gray-400 border-transparent'
+                                                    }`}>
+                                                    <div className={`w-1.5 h-1.5 rounded-full ${job.isActive ? 'bg-emerald-500 animate-ping' : 'bg-gray-400'}`}></div>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">{job.isActive ? 'Active' : 'Deactivated'}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-8 text-right text-gray-300 group-hover:text-primary dark:group-hover:text-white transition-colors">
+                                                <MoreVertical size={20} className="ml-auto" />
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="4" className="px-8 py-20 text-center text-gray-400 font-bold uppercase tracking-widest">
+                                            No jobs posted yet
                                         </td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>

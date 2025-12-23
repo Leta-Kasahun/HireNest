@@ -39,15 +39,31 @@ export const previewCV = async (cvData) => {
 };
 
 /**
- * Prepare CV for download
+ * Download CV as PDF from backend
  * @param {Object} cvData - CV builder request data
- * @param {string} cvData.templateId - Template UUID
- * @param {Object} cvData.filledData - Filled CV data
- * @returns {Promise} Download-ready data
  */
 export const downloadCV = async (cvData) => {
-    const response = await api.post('/api/v1/cv-builder/download', cvData);
-    return response.data;
+    console.log('--- Initiating PDF Download ---');
+    try {
+        const response = await api.post('/api/v1/cv-builder/download', cvData, {
+            responseType: 'blob'
+        });
+
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Resume.pdf');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
+        return { success: true };
+    } catch (error) {
+        console.error('Download CV failed:', error);
+        throw error;
+    }
 };
 
 // ==================== CV DATA MANAGEMENT ====================
@@ -64,9 +80,6 @@ export const getSeekerCV = async () => {
 /**
  * Create or update seeker's CV
  * @param {Object} cvDto - CV data
- * @param {string} cvDto.title - CV title
- * @param {string} cvDto.about - About section
- * @param {Object} cvDto.details - CV details (JSONB)
  * @returns {Promise} Saved CV data
  */
 export const saveCV = async (cvDto) => {
@@ -97,12 +110,6 @@ export const getAllTemplates = async () => {
 
 /**
  * Create a new CV template (Admin only)
- * @param {Object} templateData - Template creation data
- * @param {string} templateData.name - Template name
- * @param {string} templateData.category - Template category
- * @param {string} templateData.description - Template description
- * @param {Object} templateData.sections - Template sections structure
- * @returns {Promise} Created template
  */
 export const createTemplate = async (templateData) => {
     const response = await api.post('/api/v1/admin/cv-templates', templateData);
@@ -111,8 +118,6 @@ export const createTemplate = async (templateData) => {
 
 /**
  * Delete a CV template (Admin only)
- * @param {string} templateId - Template UUID
- * @returns {Promise} Deletion confirmation
  */
 export const deleteTemplate = async (templateId) => {
     const response = await api.delete(`/api/v1/admin/cv-templates/${templateId}`);
@@ -123,9 +128,6 @@ export const deleteTemplate = async (templateId) => {
 
 /**
  * Validate required fields in CV data
- * @param {Object} cvData - CV data to validate
- * @param {Object} templateSections - Template sections with required fields
- * @returns {Object} Validation result { isValid: boolean, errors: [] }
  */
 export const validateCVData = (cvData, templateSections) => {
     const errors = [];
@@ -134,7 +136,6 @@ export const validateCVData = (cvData, templateSections) => {
         const sectionData = cvData[sectionKey];
 
         if (Array.isArray(sectionData)) {
-            // Validate each item in the array section (Experience, Education etc)
             sectionData.forEach((item, index) => {
                 Object.entries(sectionFields).forEach(([fieldKey, fieldConfig]) => {
                     if (fieldConfig.required) {
@@ -151,7 +152,6 @@ export const validateCVData = (cvData, templateSections) => {
                 });
             });
         } else {
-            // Validate single object section (Header etc)
             Object.entries(sectionFields).forEach(([fieldKey, fieldConfig]) => {
                 if (fieldConfig.required) {
                     const value = sectionData?.[fieldKey];
@@ -173,20 +173,10 @@ export const validateCVData = (cvData, templateSections) => {
     };
 };
 
-/**
- * Format CV data for display
- * @param {Object} cvData - Raw CV data
- * @returns {Object} Formatted CV data
- */
 export const formatCVData = (cvData) => {
     return cvData;
 };
 
-/**
- * Get template category display name
- * @param {string} category - Category code
- * @returns {string} Display name
- */
 export const getCategoryDisplayName = (category) => {
     const categories = {
         'TECH': 'Technology',
@@ -202,11 +192,6 @@ export const getCategoryDisplayName = (category) => {
     return categories[category] || category;
 };
 
-/**
- * Get template category color
- * @param {string} category - Category code
- * @returns {string} Tailwind color class
- */
 export const getCategoryColor = (category) => {
     const colors = {
         'TECH': 'bg-blue-100 text-blue-700',

@@ -22,6 +22,8 @@ import {
 import TemplateGallery from '../../components/cv/TemplateGallery';
 import CVEditor from '../../components/cv/CVEditor';
 import CVPreview from '../../components/cv/CVPreview';
+import PdfViewerModal from '../../components/modals/PdfViewerModal';
+import api from '../../services/api';
 
 const CVBuilderPage = () => {
     const navigate = useNavigate();
@@ -36,6 +38,8 @@ const CVBuilderPage = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [validationErrors, setValidationErrors] = useState([]);
+    const [showPdfViewer, setShowPdfViewer] = useState(false);
+    const [pdfContent, setPdfContent] = useState(null);
 
     // Load templates on mount
     useEffect(() => {
@@ -150,25 +154,40 @@ const CVBuilderPage = () => {
                 return;
             }
 
-            // Prepare download on backend
-            const downloadResponse = await downloadCV({
+            // Prepare and trigger download on backend
+            await downloadCV({
                 templateId: selectedTemplate.id,
                 filledData: cvData
             });
-
-            // Currently, the backend prepareDownload returns a Map with template and data.
-            // In a real production app, this would return a pre-signed URL to a PDF 
-            // or we'd trigger a client-side print of the Preview.
-            console.log('Download preparation success:', downloadResponse);
-
-            // Trigger browser print for immediate "PDF" result
-            window.print();
 
             setSuccess('CV Exported Successfully!');
             setTimeout(() => setSuccess(null), 3000);
         } catch (err) {
             setError('Failed to prepare download. Please try again.');
             console.error('Error downloading CV:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleOpenViewer = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Get PDF blob from backend
+            const response = await api.post('/api/v1/cv-builder/download', {
+                templateId: selectedTemplate.id,
+                filledData: cvData
+            }, { responseType: 'blob' });
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            setPdfContent(url);
+            setShowPdfViewer(true);
+        } catch (err) {
+            setError('Failed to load PDF preview.');
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -267,6 +286,14 @@ const CVBuilderPage = () => {
                                         <Download className="w-4 h-4" />
                                     )}
                                     <span>{loading ? 'Preparing...' : 'Download PDF'}</span>
+                                </button>
+                                <button
+                                    onClick={handleOpenViewer}
+                                    disabled={loading}
+                                    className="flex items-center space-x-2 px-4 py-2 bg-slate-800 text-white hover:bg-slate-900 transition-all duration-200 font-medium rounded-lg disabled:opacity-50"
+                                >
+                                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
+                                    <span>Professional Viewer</span>
                                 </button>
                             </div>
                         )}
@@ -403,6 +430,19 @@ const CVBuilderPage = () => {
                     </div>
                 )}
             </div>
+
+            <PdfViewerModal
+                isOpen={showPdfViewer}
+                onClose={() => {
+                    setShowPdfViewer(false);
+                    if (pdfContent) {
+                        window.URL.revokeObjectURL(pdfContent);
+                        setPdfContent(null);
+                    }
+                }}
+                pdfUrl={pdfContent}
+                title="Professional CV Preview"
+            />
         </div>
     );
 };

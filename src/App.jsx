@@ -21,6 +21,7 @@ import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminVerifyOtpPage from './pages/admin/AdminVerifyOtpPage';
 import ApprovalsPage from './pages/admin/ApprovalsPage';
 import AdminCVTemplatesPage from './pages/admin/AdminCVTemplatesPage';
+import UserManagementPage from './pages/admin/UserManagementPage';
 // Seeker Pages
 import SeekerProfilePage from './pages/seeker/SeekerProfilePage';
 import JobBoardPage from './pages/seeker/JobBoardPage';
@@ -160,7 +161,7 @@ function AppContent() {
           <Route path="/admin/approvals" element={<ProtectedRoute allowedRoles="ADMIN"><ApprovalsPage /></ProtectedRoute>} />
           <Route path="/admin/cv-templates" element={<ProtectedRoute allowedRoles="ADMIN"><DashboardLayout><AdminCVTemplatesPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/admin/analytics" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="Platform Analytics" /></ProtectedRoute>} />
-          <Route path="/admin/users" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="User Management" /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute allowedRoles="ADMIN"><DashboardLayout><UserManagementPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/admin/jobs" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="Job Moderation" /></ProtectedRoute>} />
           <Route path="/admin/reports" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="System Flags" /></ProtectedRoute>} />
           <Route path="/admin/financials" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="Platform Revenue" /></ProtectedRoute>} />

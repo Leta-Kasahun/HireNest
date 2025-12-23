@@ -17,28 +17,32 @@ import {
 import { Link } from 'react-router-dom';
 import jobAlertService from '../../services/jobAlertService';
 import applicationService from '../../services/applicationService';
+import Button from '../../components/Button';
 
 const SeekerDashboard = ({ user, profile }) => {
     const [matchedJobs, setMatchedJobs] = useState([]);
     const [recentApps, setRecentApps] = useState([]);
+    const [alertsCount, setAlertsCount] = useState(0);
     const [loading, setLoading] = useState(true);
 
     const stats = [
         { label: 'Active Applications', value: recentApps.length, icon: Briefcase, color: 'text-blue-500', bg: 'bg-blue-500/10' },
         { label: 'Interviews', value: recentApps.filter(a => a.status === 'INTERVIEWING').length, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
         { label: 'Matched Jobs', value: matchedJobs.length, icon: Sparkles, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-        { label: 'Alerts Active', value: '4', icon: Bell, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+        { label: 'Alerts Active', value: alertsCount.toString(), icon: Bell, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
     ];
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [matchedData, appsData] = await Promise.all([
+                const [matchedData, appsData, alertsData] = await Promise.all([
                     jobAlertService.getMatchedJobs(),
-                    applicationService.getMyApplications()
+                    applicationService.getMyApplications(),
+                    jobAlertService.getMyAlerts()
                 ]);
                 setMatchedJobs(matchedData || []);
                 setRecentApps(appsData.content || []);
+                setAlertsCount(alertsData?.length || 0);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
             } finally {

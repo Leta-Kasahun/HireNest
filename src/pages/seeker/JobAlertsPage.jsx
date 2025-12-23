@@ -26,9 +26,35 @@ const JobAlertsPage = () => {
     const fetchAlerts = async () => {
         try {
             const data = await jobAlertService.getMyAlerts();
-            setAlerts(data);
+            if (data.length === 0) {
+                // Try to sync if no alerts exist
+                await jobAlertService.syncProfile();
+                const syncedData = await jobAlertService.getMyAlerts();
+                setAlerts(syncedData);
+            } else {
+                setAlerts(data);
+            }
         } catch (error) {
             console.error('Error fetching alerts:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSyncProfile = async () => {
+        try {
+            setLoading(true);
+            await jobAlertService.syncProfile();
+            const data = await jobAlertService.getMyAlerts();
+            setAlerts(data);
+            if (data.length > 0) {
+                alert('Profile synced! We found ' + data.length + ' alert(s) based on your skills and sectors.');
+            } else {
+                alert('Sync complete, but no alerts were generated. Please make sure you have added skills and sectors to your profile.');
+            }
+        } catch (error) {
+            console.error('Error syncing profile:', error);
+            alert('Failed to sync profile. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -80,12 +106,22 @@ const JobAlertsPage = () => {
                         </h1>
                         <p className="text-gray-500 dark:text-gray-400 font-heading">We'll notify you as soon as jobs matching your preferences are posted.</p>
                     </div>
-                    <Button
-                        onClick={() => setShowCreateModal(true)}
-                        className="rounded-2xl shadow-xl shadow-secondary/20 h-14 px-8"
-                    >
-                        <Plus className="mr-2" size={20} /> Create New Alert
-                    </Button>
+                    <div className="flex gap-4">
+                        <Button
+                            variant="outline"
+                            onClick={handleSyncProfile}
+                            className="rounded-2xl h-14 px-8 border-2"
+                            disabled={loading}
+                        >
+                            <Sparkles className="mr-2 text-secondary" size={20} /> Sync with Profile
+                        </Button>
+                        <Button
+                            onClick={() => setShowCreateModal(true)}
+                            className="rounded-2xl shadow-xl shadow-secondary/20 h-14 px-8"
+                        >
+                            <Plus className="mr-2" size={20} /> Create New Alert
+                        </Button>
+                    </div>
                 </div>
 
                 {loading ? (

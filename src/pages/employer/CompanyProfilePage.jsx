@@ -278,6 +278,41 @@ const CompanyProfilePage = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Danger Zone */}
+                {!isEditing && (
+                    <div className="mt-12 bg-red-50 dark:bg-red-900/10 rounded-[2rem] border border-red-100 dark:border-red-900/20 p-8">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                            <div>
+                                <h3 className="text-lg font-bold text-red-700 dark:text-red-400 mb-2">Danger Zone</h3>
+                                <p className="text-sm text-red-600/80 dark:text-red-400/80 max-w-xl">
+                                    Deleting your account is permanent. All your data, including job postings and company profile, will be permanently removed.
+                                </p>
+                            </div>
+                            <Button
+                                onClick={async () => {
+                                    if (window.confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.')) {
+                                        try {
+                                            setLoading(true);
+                                            await companyService.deleteAccount();
+                                            // Redirect will handle logout implicitly or we should force logout
+                                            navigate('/login');
+                                            window.location.reload(); // Force full reload to clear states
+                                        } catch (err) {
+                                            console.error(err);
+                                            setLoading(false);
+                                            alert('Failed to delete account.');
+                                        }
+                                    }
+                                }}
+                                variant="outline"
+                                className="border-red-200 text-red-600 hover:bg-red-100 dark:border-red-800 dark:hover:bg-red-900/30"
+                            >
+                                Delete Account
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Danger Zone */}

@@ -38,6 +38,7 @@ const Sidebar = ({ role, isCollapsed = false, toggleCollapse, isMobile = false }
                 items: [
                     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
                     { icon: Search, label: 'Find Work', path: '/jobs' },
+                    { icon: Bell, label: 'Job Alerts', path: '/alerts' },
                     { icon: Bookmark, label: 'Saved Jobs', path: '/saved' },
                     { icon: MessageSquare, label: 'Messages', path: '/messages' },
                 ]
@@ -54,6 +55,7 @@ const Sidebar = ({ role, isCollapsed = false, toggleCollapse, isMobile = false }
                 title: "Career & Growth",
                 items: [
                     { icon: User, label: 'My Profile', path: '/seeker/profile' },
+                    { icon: FileText, label: 'CV Builder', path: '/cv-builder' },
                     { icon: Zap, label: 'My Stats', path: '/stats' },
                     { icon: CreditCard, label: 'Earnings', path: '/earnings' },
                 ]
@@ -106,6 +108,7 @@ const Sidebar = ({ role, isCollapsed = false, toggleCollapse, isMobile = false }
             {
                 title: "Platform Admin",
                 items: [
+                    { icon: FileText, label: 'CV Templates', path: '/admin/cv-templates' },
                     { icon: CreditCard, label: 'Financials', path: '/admin/financials' },
                     { icon: HelpCircle, label: 'Support Tickets', path: '/admin/support' },
                     { icon: Settings, label: 'System Settings', path: '/admin/settings' },

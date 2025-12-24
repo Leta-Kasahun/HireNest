@@ -20,12 +20,16 @@ import SelectRolePage from './pages/auth/SelectRolePage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminVerifyOtpPage from './pages/admin/AdminVerifyOtpPage';
 import ApprovalsPage from './pages/admin/ApprovalsPage';
+import AdminCVTemplatesPage from './pages/admin/AdminCVTemplatesPage';
+import UserManagementPage from './pages/admin/UserManagementPage';
 // Seeker Pages
 import SeekerProfilePage from './pages/seeker/SeekerProfilePage';
 import JobBoardPage from './pages/seeker/JobBoardPage';
 import JobDetailPage from './pages/seeker/JobDetailPage';
 import MyApplicationsPage from './pages/seeker/MyApplicationsPage';
 import SavedJobsPage from './pages/seeker/SavedJobsPage';
+import JobAlertsPage from './pages/seeker/JobAlertsPage';
+import CVBuilderPage from './pages/seeker/CVBuilderPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 
 // Employer Pages
@@ -33,6 +37,9 @@ import PostJobPage from './pages/employer/PostJobPage';
 import CompanyProfilePage from './pages/employer/CompanyProfilePage';
 import ManageJobsPage from './pages/employer/ManageJobsPage';
 import ApplicantsPage from './pages/employer/ApplicantsPage';
+
+// Payment Pages
+import PaymentCallbackPage from './pages/payment/PaymentCallbackPage';
 
 import useAuthStore from './store/authStore';
 import { ROUTES } from './config/constants';
@@ -70,11 +77,6 @@ function AppContent() {
     const dashboardPaths = [
       '/dashboard',
       '/admin/',
-      // '/jobs', // Removed to allow Navbar on Job Board and Manage Jobs if needed, but Job Board uses DashboardNavigation? 
-      // actually JobBoard uses DashboardLayout, so we WANT valid Navbar hidden? 
-      // Wait, DashboardLayout HAS its own internal Navbar.
-      // If I want PostJob to use MAIN Navbar, I remove it from here.
-      // '/post-job', // REMOVED
       '/applications', // Seeker applications
       '/messages',
       '/saved',
@@ -87,13 +89,16 @@ function AppContent() {
       '/reports',
       '/billing',
       '/settings',
-      '/seeker/'
+      '/seeker/',
+      '/employer/profile', // Employer profile uses DashboardLayout
+      '/alerts', // Job alerts
+      '/cv-builder'
     ];
 
     // Special handling: 
     // Seeker Job Board (/jobs) USES DashboardLayout -> Hide Main Navbar.
     // Employer Manage Jobs (/jobs/manage) USES Main Navbar -> Show Main Navbar.
-    if (path === '/jobs' || path.startsWith('/jobs/') && !path.includes('/manage')) {
+    if (path === '/jobs' || (path.startsWith('/jobs/') && !path.includes('/manage'))) {
       return false; // Hide Main Navbar for Seeker Jobs
     }
 
@@ -131,6 +136,9 @@ function AppContent() {
           <Route path={ROUTES.ADMIN_LOGIN} element={<AdminLoginPage />} />
           <Route path={ROUTES.ADMIN_VERIFY_OTP} element={<AdminVerifyOtpPage />} />
 
+          {/* Payment Routes */}
+          <Route path="/payment/callback" element={<PaymentCallbackPage />} />
+
           {/* Protected Routes - General Dashboard */}
           <Route path={ROUTES.DASHBOARD} element={<ProtectedRoute><DashboardLayout><DashboardPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><PlaceholderPage title="Settings" /></ProtectedRoute>} />
@@ -141,6 +149,8 @@ function AppContent() {
           <Route path="/jobs/:id" element={<ProtectedRoute><DashboardLayout><JobDetailPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/applications" element={<ProtectedRoute allowedRoles="SEEKER"><DashboardLayout><MyApplicationsPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/saved" element={<ProtectedRoute allowedRoles="SEEKER"><DashboardLayout><SavedJobsPage /></DashboardLayout></ProtectedRoute>} />
+          <Route path="/alerts" element={<ProtectedRoute allowedRoles="SEEKER"><DashboardLayout><JobAlertsPage /></DashboardLayout></ProtectedRoute>} />
+          <Route path="/cv-builder" element={<ProtectedRoute allowedRoles="SEEKER"><CVBuilderPage /></ProtectedRoute>} />
           <Route path={ROUTES.SEEKER.PROFILE} element={<ProtectedRoute allowedRoles="SEEKER"><DashboardLayout><SeekerProfilePage /></DashboardLayout></ProtectedRoute>} />
 
           {/* Employer Dashboard Routes */}
@@ -152,8 +162,9 @@ function AppContent() {
           {/* Admin Dashboard Routes */}
           <Route path={ROUTES.ADMIN.DASHBOARD} element={<ProtectedRoute allowedRoles="ADMIN"><DashboardLayout><DashboardPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/admin/approvals" element={<ProtectedRoute allowedRoles="ADMIN"><ApprovalsPage /></ProtectedRoute>} />
+          <Route path="/admin/cv-templates" element={<ProtectedRoute allowedRoles="ADMIN"><DashboardLayout><AdminCVTemplatesPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/admin/analytics" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="Platform Analytics" /></ProtectedRoute>} />
-          <Route path="/admin/users" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="User Management" /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute allowedRoles="ADMIN"><DashboardLayout><UserManagementPage /></DashboardLayout></ProtectedRoute>} />
           <Route path="/admin/jobs" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="Job Moderation" /></ProtectedRoute>} />
           <Route path="/admin/reports" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="System Flags" /></ProtectedRoute>} />
           <Route path="/admin/financials" element={<ProtectedRoute allowedRoles="ADMIN"><PlaceholderPage title="Platform Revenue" /></ProtectedRoute>} />

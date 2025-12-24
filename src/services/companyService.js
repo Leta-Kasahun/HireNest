@@ -28,6 +28,10 @@ const companyService = {
     getPublicProfile: async (profileId) => {
         const response = await api.get(`/api/v1/company-profile/${profileId}`);
         return response.data;
+    },
+
+    deleteAccount: async () => {
+        await api.delete('/api/v1/company-profile/me');
     }
 };
 

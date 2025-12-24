@@ -4,7 +4,6 @@ import { Twitter, Linkedin, Instagram } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
   return (
     <footer className="bg-primary dark:bg-[#0B1C2D] text-white pt-24 pb-12 transition-colors duration-500 relative overflow-hidden border-t border-white/5">
       {/* Background Decor */}
@@ -100,5 +99,4 @@ const Footer = () => {
     </footer>
   );
 };
-
 export default Footer;

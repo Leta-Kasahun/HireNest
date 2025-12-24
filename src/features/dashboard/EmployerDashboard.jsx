@@ -176,7 +176,7 @@ const EmployerDashboard = ({ user }) => {
                                             </Link>
                                         </td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>
